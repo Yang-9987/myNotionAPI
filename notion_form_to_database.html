@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <title>Notion API Demo</title>
+</head>
+<body>
+  <h1>Notion 新页面创建示例</h1>
+  <button id="create-page">创建示例页面</button>
+  <pre id="response"></pre>
+
+  <script>
+    document.getElementById('create-page').addEventListener('click', async () => {
+      const token = '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';       // 替换为您的 Integration Token
+      const databaseId = '224723d0e4358007a1f8d1a0c8fba449';        // 替换为您的 Database ID
+
+      const url = 'https://api.notion.com/v1/pages';
+      const payload = {
+        parent: { database_id: databaseId },
+        properties: {
+          Name: {
+            title: [
+              { text: { content: '示例标题' } }
+            ]
+          },
+          Description: {
+            rich_text: [
+              { text: { content: '这是描述' } }
+            ]
+          }
+        }
+      };
+
+      try {
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Notion-Version': '2022-06-28',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          document.getElementById('response').textContent = JSON.stringify(data, null, 2);
+          throw new Error(`Error ${res.status}: ${data.message}`);
+        }
+        document.getElementById('response').textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        document.getElementById('response').textContent = err.toString();
+      }
+    });
+  </script>
+</body>
+</html>
